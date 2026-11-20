@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="親子のおだやかノート">
+<title>親子のおだやかノート</title>
+<style>
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", sans-serif;
+  background: #fbf6ef; color: #3b3a36; line-height: 1.75; font-size: 16px;
+}
+#app { height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+#main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 18px 16px 24px; }
+.wrap { max-width: 560px; margin: 0 auto; }
+h1 { font-size: 20px; font-weight: 700; color: #3f6f66; }
+h2 { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: #3f6f66; }
+h3 { font-size: 15px; font-weight: 700; margin: 10px 0 4px; color: #3f6f66; }
+.sub { font-size: 13px; color: #8a857b; }
+.card { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 10px rgba(80,60,30,.07); }
+.card.warm { background: #fff3e6; }
+.card.green { background: #eaf4f1; }
+.hello { font-size: 17px; font-weight: 600; line-height: 1.8; }
+.tag { display: inline-block; font-size: 12px; font-weight: 700; color: #fff; background: #5b8f85; padding: 2px 10px; border-radius: 999px; margin-bottom: 8px; }
+.tag.o { background: #e8956b; }
+.step { margin-top: 10px; padding: 10px 12px; background: #fff; border-left: 4px solid #e8956b; border-radius: 8px; font-size: 15px; }
+.card.warm .step, .card.green .step { background: #fff; }
+.btn { display: block; width: 100%; padding: 14px; border: none; border-radius: 14px; font-size: 16px; font-weight: 700; color: #fff; background: #5b8f85; margin-top: 10px; }
+.btn.o { background: #e8956b; }
+.btn.ghost { background: #fff; color: #3f6f66; border: 2px solid #5b8f85; }
+.btn.small { width: auto; display: inline-block; padding: 8px 16px; font-size: 14px; margin-top: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.chip { padding: 9px 14px; border-radius: 999px; border: 2px solid #d9d2c5; background: #fff; font-size: 14px; color: #3b3a36; }
+.chip.on { background: #5b8f85; border-color: #5b8f85; color: #fff; font-weight: 700; }
+.chip.on.o { background: #e8956b; border-color: #e8956b; }
+.seg { display: flex; flex-wrap: wrap; gap: 4px; background: #ece5d8; border-radius: 12px; padding: 4px; margin-bottom: 14px; }
+.seg button { flex: 1 1 30%; border: none; background: transparent; padding: 9px 2px; border-radius: 9px; font-size: 13px; font-weight: 700; color: #8a857b; }
+.seg button.on { background: #fff; color: #3f6f66; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+input[type=text], textarea { width: 100%; font-size: 16px; padding: 12px; border: 2px solid #e2dacb; border-radius: 12px; background: #fff; font-family: inherit; color: #3b3a36; }
+textarea { min-height: 72px; resize: none; }
+.lvl { display: flex; gap: 8px; margin: 8px 0; }
+.lvl button { flex: 1; padding: 12px 0; border-radius: 12px; border: 2px solid #d9d2c5; background: #fff; font-size: 16px; font-weight: 700; color: #8a857b; }
+.lvl button.on { background: #e8956b; border-color: #e8956b; color: #fff; }
+.row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.rec { padding: 10px 0; border-bottom: 1px solid #f0ebe0; font-size: 15px; }
+.rec:last-child { border-bottom: none; }
+.rec .meta { font-size: 12px; color: #8a857b; }
+.del { border: none; background: none; color: #b5ada0; font-size: 13px; padding: 4px 6px; }
+.bar-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 13px; }
+.bar-row .name { width: 112px; flex-shrink: 0; }
+.bar { flex: 1; background: #f0ebe0; border-radius: 6px; height: 14px; overflow: hidden; }
+.bar > div { height: 100%; background: #e8956b; border-radius: 6px; }
+.bar-row .n { width: 24px; text-align: right; color: #8a857b; }
+.before { color: #b0614a; font-weight: 700; font-size: 15px; }
+.after { color: #3f6f66; font-weight: 600; font-size: 15px; margin-top: 6px; }
+.why { font-size: 13px; color: #7a766c; margin-top: 8px; }
+.stats { display: flex; gap: 8px; }
+.stat { flex: 1; background: #fff; border-radius: 14px; padding: 10px 4px; text-align: center; box-shadow: 0 2px 10px rgba(80,60,30,.07); }
+.stat .big { font-size: 24px; font-weight: 800; color: #3f6f66; line-height: 1.2; }
+.stat .lab { font-size: 11px; color: #8a857b; }
+.breath-area { text-align: center; padding: 8px 0 4px; }
+.circle { width: 120px; height: 120px; border-radius: 50%; margin: 10px auto; background: radial-gradient(circle at 35% 30%, #bfe0d8, #5b8f85); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 15px; }
+.circle.run { animation: breathe 10s ease-in-out infinite; }
+@keyframes breathe { 0% { transform: scale(.75); } 40% { transform: scale(1.15); } 100% { transform: scale(.75); } }
+.chk { display: flex; align-items: center; gap: 12px; padding: 4px 0; border-bottom: 1px solid #f0ebe0; }
+.chk:last-child { border-bottom: none; }
+.chk .box { flex: 1; display: flex; align-items: center; gap: 12px; border: none; background: none; padding: 10px 0; text-align: left; font-size: 16px; color: #3b3a36; font-family: inherit; }
+.chk .mark { width: 28px; height: 28px; border-radius: 8px; border: 2px solid #c9c1b2; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff; flex-shrink: 0; }
+.chk.done .mark { background: #5b8f85; border-color: #5b8f85; }
+.chk.done .nm { color: #9a958a; text-decoration: line-through; }
+.timer-disp { font-size: 56px; font-weight: 800; color: #3f6f66; text-align: center; font-variant-numeric: tabular-nums; line-height: 1.2; margin: 8px 0; }
+.progress { height: 10px; background: #f0ebe0; border-radius: 6px; overflow: hidden; margin: 6px 0 10px; }
+.progress > div { height: 100%; background: #5b8f85; border-radius: 6px; transition: width .3s; }
+.say { background: #f6faf8; border-radius: 10px; padding: 10px 12px; margin-top: 6px; font-size: 15px; }
+.say b { color: #3f6f66; }
+.ng { color: #b0614a; font-size: 14px; margin: 4px 0; }
+.ref a { color: #3f6f66; font-size: 13px; display: block; padding: 5px 0; word-break: break-all; }
+#nav { display: flex; background: #fff; border-top: 1px solid #e8e0d1; padding-bottom: env(safe-area-inset-bottom); }
+#nav button { flex: 1; border: none; background: none; padding: 8px 0 7px; font-size: 10px; color: #a39d90; font-weight: 700; }
+#nav button .ic { display: block; font-size: 20px; line-height: 1.2; }
+#nav button.on { color: #3f6f66; }
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,.5); align-items: center; justify-content: center; padding: 24px; }
+.modal-overlay.active { display: flex; }
+.modal-box { background: #fff; border-radius: 18px; padding: 22px; width: 100%; max-width: 340px; }
+.modal-title { font-weight: 700; margin-bottom: 14px; }
+.modal-btns { display: flex; gap: 10px; }
+.modal-btns button { flex: 1; padding: 12px; border-radius: 12px; border: none; font-size: 15px; font-weight: 700; }
+.m-yes { background: #e8956b; color: #fff; }
+.m-no { background: #ece5d8; color: #3b3a36; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom)); background: #3f6f66; color: #fff; padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 700; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 500; max-width: 90%; text-align: center; }
+.toast.show { opacity: 1; }
+.empty { color: #a39d90; font-size: 14px; text-align: center; padding: 14px 0; }
+.note { font-size: 12px; color: #a39d90; text-align: center; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="main"><div class="wrap" id="view"></div></div>
+  <div id="nav">
+    <button data-tab="home" class="on"><span class="ic">🏠</span>ホーム</button>
+    <button data-tab="voice"><span class="ic">💬</span>声かけ</button>
+    <button data-tab="forget"><span class="ic">🧩</span>仕組み</button>
+    <button data-tab="pause"><span class="ic">🍃</span>ひと呼吸</button>
+    <button data-tab="log"><span class="ic">📝</span>記録</button>
+    <button data-tab="review"><span class="ic">📊</span>ふり返り</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal-box">
+    <div class="modal-title">この項目を削除しますか？</div>
+    <div class="modal-btns">
+      <button class="m-no" id="m-no">やめる</button>
+      <button class="m-yes" id="m-yes">削除する</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- 保存(プライベートブラウズ対策でtry/catch) ---------- */
+var KEY = 'oyakonote_v1';
+function safeGet(key, fallback) {
+  try { var v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; }
+  catch (e) { return fallback; }
+}
+function safeSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+}
+var state = safeGet(KEY, null) || {};
+if (!state.irritations) state.irritations = [];
+if (!state.goods) state.goods = [];
+if (!state.items) state.items = [];
+if (!state.checks) state.checks = {};
+if (!state.forgot) state.forgot = [];
+if (!state.goals) state.goals = {};
+if (!state.sessions) state.sessions = {};
+if (!state.paper) state.paper = {};
+if (!state.routine) state.routine = {};
+function save() { safeSet(KEY, state); }
+
+/* ---------- 日付ユーティリティ ---------- */
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function todayStr() { return ymd(new Date()); }
+function dayOfYear() { var n = new Date(); var s = new Date(n.getFullYear(), 0, 0); return Math.floor((n - s) / 86400000); }
+function daysAgoStr(k) { var d = new Date(); d.setDate(d.getDate() - k); return ymd(d); }
+function dispDate(s) { var p = s.split('-'); return parseInt(p[1], 10) + '/' + parseInt(p[2], 10); }
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+/* ---------- コンテンツ ---------- */
+var CARE = [
+  '平日はほぼお一人で、お仕事も家のことも、娘さんの支度や勉強まで担っている毎日。それだけで、もう十分に頑張っています。',
+  '毎日、娘さんのことを一番に考えて向き合っていらっしゃいますね。その熱量は、娘さんにとって大きな安心の土台です。',
+  '「どうしたらもっと良くなるか」を真剣に考え続けているのは、それだけ深い愛情があるからです。',
+  '今日もお疲れさまです。パートと家事、そして娘さんのサポートまで。全部を完璧にやろうとしなくて大丈夫です。',
+  '悩むのは、娘さんを大切に思っている証拠です。まずは今日の自分をねぎらってください。',
+  '娘さんが「口出ししないで」と言えるのは、家が本音を出せる安全な場所だからでもあります。',
+  '完璧な親は、どこにもいません。迷いながらも向き合い続けているあなたの姿が、一番の支えになっています。',
+  '朝の支度から夜の宿題まで、一人で回すのは本当に大変なことです。今日は「最低限できたらOK」にしましょう。'
+];
+
+var TIPS = [
+  { t: '「口出ししないで」は、成長のサインです',
+    b: '中学生は「自分のことは自分で決めたい」という気持ちが急に強くなる時期です。「何も知らないのに口出ししないで」は反抗というより、自立が始まったサイン。接し方が悪いという意味ではありません。',
+    s: '今日は勉強中の姿勢に一言も触れず、終わったあとに「お疲れさま」だけ伝えてみる。' },
+  { t: '「今からやろうと思っていたのに」は本当です',
+    b: 'ご自身にも「今やろうと思っていたのに言われてやる気がなくなった」経験はありませんか。思春期は特に、言われる前の「自分で始めたい」気持ちが強い時期です。',
+    s: '声をかける前に、あと10分だけ待ってみる。' },
+  { t: '疲れているとき、脳は計画できません',
+    b: '朝5時起きで部活もある毎日は、大人でいえば残業続きの状態です。直前になって慌てるのは怠けではなく、エネルギー切れが原因のことも多くあります。',
+    s: '帰宅後30分は勉強の話をせず、おやつと休憩の時間にしてみる。' },
+  { t: '直前に慌てるのは、この年ごろの「あるある」です',
+    b: '先を見通して段取りを組む力は、中学生ではまだ発達の途中です。進学校でも同じで、できないのは本人の性格より年齢の特徴によるところが大きいといえます。',
+    s: '「いつやる?」と聞き、娘さん自身に時間を1つだけ決めてもらう。' },
+  { t: '怒って動かすと、その場しか動きません',
+    b: '怒られて始めた勉強は「怒られないと始まらない」習慣になりやすく、親も子もだんだん消耗します。聞かれて自分で決めたことのほうが、長く続きます。',
+    s: '今日は怒らずに1回だけ、「今日の宿題、何から始める?」と聞いてみる。' },
+  { t: '「傾聴 → 承認 → 質問」の順で声をかける',
+    b: '指示や命令の前に、まず聞く、次に認める、最後に質問する。この順番が、子どものやる気を引き出す基本とされています。「声かけ」タブに場面別の例があります。',
+    s: '今日は、1回だけこの順番で声をかけてみる。' },
+  { t: '手を止めて聞く、それだけで信頼が育ちます',
+    b: 'スマホを見ながらの「うん、うん」より、手を止めて顔を見て聞く数十秒のほうが、子どもには強く伝わります。忙しい毎日だからこそ、短くて十分です。',
+    s: '娘さんが話しかけてきたら、1回だけ手を止めて最後まで聞く。' },
+  { t: '紙に書くと、勉強が「見える」ようになります',
+    b: 'だらだらして見えても、書いてみると実際にやったことが見える日があります。やったことが目に見えると、親は急かす声かけが減らしやすくなり、娘さんも「ここまでやった」と実感しやすくなります。書くのは娘さん自身にしてもらいます。',
+    s: '今日は、娘さんが書いた紙を見て「お疲れさま」と、今日一番進んだところを聞いてみる。' },
+  { t: 'だらだらの中身を、まず見てみましょう',
+    b: 'だらだらして見えるときは、疲れ、何をどこまでやるか決まっていない、始める切り替えが重い、集中が続かない、休憩が長引く、わからなくて止まっている、などの理由が隠れていることがあります。「仕組み」タブの「だらだらの理由さがし」で整理できます。',
+    s: '今日は急かさず、だらだらの理由を1つだけ当ててみる。' },
+  { t: '集中は、短く区切るほうが続きます',
+    b: '集中力は長く続くものではなく、作業と休憩を短く繰り返すほうが効率的だと言われています。時間の長さより、勉強の質のほうが大切です。',
+    s: '今日は「15分だけ」と区切って、娘さん自身にタイマーを押してもらう。' },
+  { t: '勉強中は話しかけず、終わってから声をかける',
+    b: '勉強中は話しかけないほうが集中しやすいとされています。気になっても、声かけは区切りがついてからにして、そのときは「お疲れさま」を先に伝えます。',
+    s: '今日は勉強中の声かけを、終わるまで我慢してみる。' },
+  { t: '同級生の話が出たら、「聞く」だけでいい',
+    b: '娘さんが優秀な同級生の話をするのは、自慢でも比較の合図でもなく、ただ話したいだけのことが多いものです。比べる言葉を返すと、次から話してくれなくなることがあります。',
+    s: '同級生の話が出たら、「その子のどこがすごいと思った?」とだけ聞いてみる。' },
+  { t: '周りと比べて落ち込むのは、娘さんも同じです',
+    b: '思春期は、周りと自分を比べて劣等感や自己嫌悪を抱きやすい時期だと言われています。親が他の子と比べると、娘さんの「自分はダメだ」という気持ちを強めてしまうことがあります。',
+    s: '今日は、他の子ではなく「娘さん自身の良いところ」を1つ探す。' },
+  { t: '忘れ物が多いのは、叱られ続けやすい苦手です',
+    b: '忘れ物や遅刻を繰り返す人は、何度も叱られて自己否定的になりやすいと言われます。まず「忘れなかった日」「ちゃんと持っていけた日」を一緒に思い出すのが効果的です。',
+    s: '「忘れ物ゼロだった日もあったよね」と、うまくいった日に1回だけ触れてみる。' },
+  { t: '忘れ物は、叱るより仕組みで減ります',
+    b: '前夜に準備して決まった場所に置く、持ち物を1か所にまとめるなど、仕組みを作ったほうが確実に減ります。「忘れ物」タブに前夜チェック表を用意しました。',
+    s: '今夜、娘さんと一緒に持ち物チェック表を1つだけ作ってみる。' },
+  { t: 'チェック表は、本人が書くから続きます',
+    b: '親が作ったチェック表は他人事になりやすく、本人が自分で考えて書いたものが一番習慣になる、という経験談があります。項目を一緒に考えるところから始めてみてください。',
+    s: '娘さんに「何があれば忘れ物が減りそう?」と聞いて、書いてもらう。' },
+  { t: 'サポートは「一緒 → 見守り → 確認」の3段階',
+    b: '最初は一緒に支度し、次に見守り、最後に本人がやったものを確認する。段階を踏みながら、少しずつ手を離していくのが理想とされています。やり過ぎると過保護、放置すると定着しません。',
+    s: '今夜は「一緒に」でなく「見守り」に1段階だけ進めてみる。' },
+  { t: '朝に余裕があると、忘れ物は減ります',
+    b: '朝食も取れないほど慌ただしいと、忘れ物のリスクは上がります。前夜に準備を済ませておけば、朝は確認だけで出られます。5時起きの娘さんには特に有効です。',
+    s: '今夜の準備を、寝る30分前までに済ませる流れを作る。' },
+  { t: '質問は、命令より届きます',
+    b: '「やりなさい」は指示ですが、「どうする?」は選択です。自分で決めた感覚が残ると、動く力も出やすくなります。「なぜ」より「何」「どうなったらいい?」で聞くのがコツです。',
+    s: '「やりなさい」を言いそうになったら、「何から始める?」に置き換えてみる。' },
+  { t: '中身を知らずに口出しすると、反発されます',
+    b: '何をやっているのか知らないまま姿勢だけ注意されると、子どもは「分かってもらえていない」と感じます。まずは中身への関心を向けるところからです。',
+    s: '「今日の授業で一番おもしろかったのは?」と聞くだけにする。' },
+  { t: '受け止めることと、許すことは別です',
+    b: '「忘れて困ったね」と気持ちを受け止めることは、忘れ物を許すことではありません。気持ちを受け止めたあとで、こちらの願いを伝えるほうが言葉が届きやすくなります。',
+    s: '注意する前に、まず「そっか、困ったね」を1回挟んでみる。' },
+  { t: '1か月前の娘さんと比べてみましょう',
+    b: 'SNSで見る「できる子」は、ごく一部のうまくいった場面です。比べて元気が出る親子は少なく、多くは焦りとイライラが増えます。比べるなら、自分の子の過去です。',
+    s: '1か月前の娘さんと比べて、少しでもできるようになったことを1つ探してみる。' },
+  { t: '家が安心できる場所だと、学校で頑張れます',
+    b: '娘さんは学校で、毎日たくさんのことを頑張っています。家で「ほっとできる」ことが、外で頑張るエネルギーの充電になります。',
+    s: '今日は帰ってきた娘さんに、笑顔で「おかえり」だけ言ってみる。' },
+  { t: '全部を一人で背負わなくて大丈夫です',
+    b: '平日ほぼ一人で回す毎日は、余裕がなくなって当然です。声かけを1つ減らす、チェックは娘さんに任せるなど、「減らす」ことも大事な工夫です。',
+    s: '今日は、親がやっていることを1つだけ娘さんに任せてみる。' },
+  { t: '遠くにいる家族にも、良い話を1つだけ',
+    b: '離れて暮らす家族とは、悩みの共有よりも「今週の良かったこと」を1つ伝え合うほうが、お互いに前向きでいられます。小さな話で十分です。',
+    s: '今週の「良かった点」を1つ、離れている家族にメッセージで送ってみる。' },
+  { t: '「言い過ぎた」と伝えるのは、強さです',
+    b: '強く言ってしまった日は、短く「さっきは言い過ぎたね」と伝えれば十分です。失敗と修復を繰り返しながら、親子の信頼は深まっていきます。',
+    s: '言い過ぎたと感じたら、夜に短く一言だけ伝えてみる。' },
+  { t: '勉強と関係ない会話を、週に1回',
+    b: '勉強の話ばかりだと、親子の会話が「指示と反発」だけになりがちです。好きなものや部活の話など、勉強以外の会話が関係の貯金になります。',
+    s: '今日は、娘さんの好きなことについて1つだけ質問してみる。' }
+];
+
+var VOICES = [
+  { b: '「宿題ちゃんとやりなさい!」',
+    a: ['「今日の宿題、何から始める?」', '「手伝えることある?」'],
+    w: '命令は反発を呼びやすく、質問は「自分で決めた」感覚を残します。' },
+  { b: '「なんで忘れ物ばっかりするの!」',
+    a: ['「忘れて困ったこと、あった?」', '「何があれば、忘れなさそう?」'],
+    w: '理由を問い詰めるより、仕組みを一緒に考えるほうが忘れ物は減ります。' },
+  { b: '「また宿題忘れたの!?」',
+    a: ['「宿題、どうなった? 先生には何て伝えた?」', '「次は忘れないために、何をしたらよさそう?」'],
+    w: '起きたことを責めず、次の一手を本人に考えてもらいます。' },
+  { b: '「○○ちゃんはもうやってるよ」',
+    a: ['「前より早く始められた日があったね」', '「1か月前の自分と比べてどう?」'],
+    w: '他の子との比較は意欲を下げやすく、本人の過去との比較は力になります。' },
+  { b: '「○○さんはすごいね、あなたも見習いなさい」',
+    a: ['「その子のどこがすごいと思った?」', '「あなたは、どうなりたい?」'],
+    w: '比べる言葉が返ると、娘さんは話してくれなくなります。話の中身を聞くと、娘さん自身の気持ちが見えてきます。' },
+  { b: '「だらだらしてないで、早くやりなさい!」',
+    a: ['「今日のゴール、何時までに終わらせたい?」', '「15分だけタイマーをかけてやってみる?」', '「どこで止まってる?」'],
+    w: '急かすより、ゴールと時間を本人に決めてもらうほうが動き出しやすくなります。' },
+  { b: '「ちゃんと座って集中しなさい!」',
+    a: ['「今、どんな感じ?」', '「少し休憩する?」'],
+    w: '姿勢への注意より、状態を聞くほうが本人の話を引き出せます。' },
+  { b: '「いつやるの!?」',
+    a: ['「いつごろやるつもり?」', '「何時になったら声かけようか?」'],
+    w: '詰問ではなく、本人にスケジュールを決めてもらう形にします。' },
+  { b: '「そんなんじゃ受験に間に合わないよ」',
+    a: ['「心配なんだ。困っていることはある?」'],
+    w: '不安を「私は心配」という自分の気持ちとして伝えると、責められた感じが減ります。' },
+  { b: '「もう知らない!勝手にしなさい」',
+    a: ['「ちょっと落ち着いてくるね。あとで話そう」'],
+    w: '感情が高ぶったときは、いったん離れるのが一番の近道です。' }
+];
+
+var SCENES = [
+  { n: 'だらだら勉強している',
+    l: '勉強中は声をかけず、区切りがついたときに「今どんな感じ?」と聞く。',
+    a: '「疲れてるのに、机に向かってるね」「始められたのがえらいよ」',
+    q: '「今日のゴールは何?」「何分やったら休憩にする?」「どこで止まってる?」' },
+  { n: '優秀な同級生の話をした',
+    l: '「そうなんだ、すごいね」と、まず話をそのまま受け止める。比べる言葉は返さない。',
+    a: '「その子のこと、よく見ているんだね」「自分も頑張りたいと思っているんだね」',
+    q: '「その子のどこがすごいと思った?」「あなたは、どうなりたい?」' },
+  { n: '宿題を始めない',
+    l: '手を止めて顔を見て、「今どんな感じ?」と聞く。途中で遮らず、最後まで聞く。例:「そっか、今日は疲れたんだね」',
+    a: '「朝5時に起きて、部活もして帰ってきたんだもんね。それだけで頑張ってるよ」',
+    q: '「宿題、何から始めるとラクそう?」「どれくらい休んだらできそう?」' },
+  { n: '忘れ物をした',
+    l: '責めずに、まず事実と気持ちを聞く。例:「そっか、忘れちゃったんだ。困った?」',
+    a: '「話してくれてありがとう」「ちゃんと持っていけた日もあるよね」',
+    q: '「次は何があれば忘れなさそう?」「チェック表に入れるなら何?」' },
+  { n: '宿題・提出物を忘れた',
+    l: '「どうなった?」「先生には何て伝えた?」と、起きたことを聞く。',
+    a: '「自分で先生に伝えられたのは大事なことだよ」',
+    q: '「提出はいつまでにできそう?」「次は、どの時間に確認すると忘れなさそう?」' },
+  { n: 'テストの結果が悪い',
+    l: '結果を聞く前に、「どう感じた?」と気持ちから聞く。',
+    a: '「ここまでやってきたのは見てたよ」「前より伸びたところはどこ?」',
+    q: '「次に1つだけ変えるなら、何にする?」' },
+  { n: '疲れて帰ってきた',
+    l: '「おかえり、お疲れさま」。話したそうなら聞き、話したくなさそうなら待つ。',
+    a: '「毎日よく頑張ってるね」',
+    q: '「先にご飯にする? お風呂にする?」(選べる質問にする)' }
+];
+
+var IMSG = [
+  { b: 'プリントがカバンに入ったまま',
+    a: '「プリントがカバンに入ったままなのを見て、提出に間に合うか少し心配になったの。出す日を一緒に決めてくれると安心だな」' },
+  { b: '宿題が夜遅くになっている',
+    a: '「宿題が遅い時間になると、睡眠が足りなくなるのが心配。何時までに始めるか、教えてくれる?」' },
+  { b: 'つい強く言ってしまった',
+    a: '「さっきは言い過ぎたね。ごめんね。私も疲れていて余裕がなかったの」' }
+];
+
+var FORGET_TIPS = [
+  { t: '「性格」より「仕組み」で考える',
+    b: '忘れ物は、本人の努力不足だけが原因とは限りません。忙しさ、疲れ、気持ちが他に向く瞬間の「うっかり」など、さまざまな要因が重なります。叱るより、忘れにくい環境を整えるほうが効果的です。' },
+  { t: '前夜に準備して、定位置に置く',
+    b: '前夜のうちに準備して、持ち物を点検し、カバンを玄関など決まった場所に置いておく。この流れが基本です。' },
+  { t: '持ち物は「ひとまとめ」にする',
+    b: '持ち物の数が多いほど気を配る対象が増えます。バラバラに持たず、ひとまとめにすることで、確認が楽になります。' },
+  { t: 'チェック表は本人が書く',
+    b: '親が書いたチェック表は他人事になりやすく、「自分で考えて、自分で書く」ほうが習慣として根付きやすいという経験談があります。' },
+  { t: 'サポートは3段階で、少しずつ手を離す',
+    b: '一緒に支度する → 見守る → 本人がやったものを確認する。やり過ぎは過保護、放置は定着しません。今の娘さんは何段階目か、考えるヒントにしてください。' },
+  { t: '忘れなかった日を、一緒に思い出す',
+    b: '叱られ続けると「自分はダメだ」と思いやすくなります。忘れなかった日、ちゃんと持っていけた日を一緒に思い出し、「できる自分」を確認します。' },
+  { t: '先回りしすぎず、責めずに「次どうする?」',
+    b: '先回りして全部親が準備すると、本人が困る経験が減ります。忘れて困ったときは、責めずに「次はどうしようか」と一緒に考えます。ただし、親が一人で全部抱えない工夫も大切です。' },
+  { t: '睡眠・朝の余裕を見直す',
+    b: '朝の時間にゆとりがないと、持ち物を点検する余裕もなくなります。5時起きの娘さんの場合、前夜の準備を済ませて、朝は確認だけにするのが現実的です。' }
+];
+
+var PRESET_ITEMS = ['プリント・提出物', '明日の教科書・ノート', '宿題(終わっている)', '筆箱', '体操服・部活の道具', '水筒', 'ハンカチ・ティッシュ'];
+
+var REFS = [
+  ['東洋経済「忘れ物が多い子の親がしがちなNG行動」(中島美鈴)', 'https://toyokeizai.net/articles/-/537129'],
+  ['東洋経済「気をつけていても遅刻や忘れ物をしてしまう」(本田秀夫)', 'https://toyokeizai.net/articles/-/653290'],
+  ['All About「忘れ物を減らすために親が心に留めたい3つのポイント」', 'https://allabout.co.jp/gm/gc/455362/'],
+  ['いこーよ「ちょっとの工夫で子どもの忘れ物を減らす方法」(親野智可等)', 'https://iko-yo.net/articles/2282'],
+  ['HugKum「小学生の忘れ物を減らすコツ」(整理収納アドバイザー)', 'https://hugkum.sho.jp/148660'],
+  ['PRESIDENT「受験期の声かけは傾聴→承認→質問」(中島輝)', 'https://president.jp/articles/-/88937'],
+  ['大阪市 教育コーチング(質問・承認・傾聴)', 'https://www.city.osaka.lg.jp/kyoiku/cmsfiles/contents/0000121/121316/koching2016-0.pdf'],
+  ['栃木県教育委員会「心に届く言葉かけとIメッセージ」', 'https://www.pref.tochigi.lg.jp/m06/education/shougai/suishinjigyou/documents/20260312155847.pdf'],
+  ['千葉県教育委員会「思春期の特徴を理解し温かく見守りましょう」', 'https://www.pref.chiba.lg.jp/kyouiku/shougaku/renkei/kateikyouiku/documents/t_11_1.pdf'],
+  ['インターエデュ「中学受験が反抗期に重なったら」', 'https://www.inter-edu.com/article/?p=450'],
+  ['HugKum「子どもの集中力は長く続かない」(リズム管理・今日のゴール)', 'https://hugkum.sho.jp/582725'],
+  ['HugKum「子どもの集中力をなくす代表的な原因」(睡眠)', 'https://hugkum.sho.jp/?p=159015'],
+  ['ベスト塾「勉強を習慣化するコツ」', 'https://bestjuku.com/shingaku/s-article/39120/'],
+  ['受験ラボ「中学生の勉強習慣がつかない5つの原因」', 'https://jyuke-labo.com/koukoujyukentaisaku/junior-high-study-habits/'],
+  ['アガルート「中学生が勉強を習慣化するために親ができること」', 'https://www.agaroot.jp/coaching/column/study-habituation/'],
+  ['All About「勉強時間は長いほどよいわけではない」', 'https://allabout.co.jp/gm/gc/434503/'],
+  ['東洋経済「ストップウォッチとタイマーを活用しよう」', 'https://toyokeizai.net/articles/amp/195714'],
+  ['東洋経済「親が勉強に直接介入すると失敗する」', 'https://toyokeizai.net/articles/-/409305']
+];
+
+var TRIGGERS = [
+  'SNSを見た直後', 'だらだら勉強', '同級生の話を聞いた', '宿題・課題の話', '忘れ物', '予定どおり進まない',
+  '勉強中の姿勢・態度', '朝・夕のバタバタ', '娘の言い返し', '自分が疲れている', 'その他'
+];
+var GOOD_QUICK = [
+  '朝5時に起きて登校した', '部活を頑張った', '自分から机に向かった',
+  '疲れていても宿題をやった', '「ありがとう」が言えた', '忘れ物ゼロの日だった', '忘れ物に気づいて自分で対応した'
+];
+
+/* ---------- 画面状態 ---------- */
+var tab = 'home';
+var logMode = 'irr';
+var irrTrigger = '';
+var irrLevel = 0;
+var goodKind = '今日の頑張り';
+var pauseTrigger = '';
+var breathing = false;
+var voiceMode = 'swap';
+var voiceOpen = -1;
+var scene = 0;
+var forgetMode = 'check';
+var whyIdx = -1;
+var timer = { running: false, kind: 'focus', endAt: 0, mins: 20, done: '' };
+var pendingDelete = null;
+
+var view = document.getElementById('view');
+
+function toast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show';
+  setTimeout(function () { t.className = 'toast'; }, 2200);
+}
+
+/* ---------- 集計 ---------- */
+function inLastDays(rec, n) { return rec.d >= daysAgoStr(n - 1); }
+function weekGoods() { return state.goods.filter(function (g) { return inLastDays(g, 7); }); }
+function weekIrr() { return state.irritations.filter(function (r) { return inLastDays(r, 7); }); }
+function weekForgot() { return state.forgot.filter(function (r) { return inLastDays(r, 7); }); }
+function prevWeekIrr() {
+  var from = daysAgoStr(13), to = daysAgoStr(7);
+  return state.irritations.filter(function (r) { return r.d >= from && r.d < to; });
+}
+function allChecked(dateStr) {
+  if (!state.items.length) return false;
+  var c = state.checks[dateStr] || {};
+  return state.items.every(function (it) { return c[it.id]; });
+}
+function checkedCount() {
+  var c = state.checks[todayStr()] || {};
+  return state.items.filter(function (it) { return c[it.id]; }).length;
+}
+function hasItem(name) { return state.items.some(function (it) { return it.name === name; }); }
+function addItem(name) {
+  name = (name || '').trim();
+  if (!name) return false;
+  if (hasItem(name)) return false;
+  state.items.push({ id: 'i' + Date.now() + Math.floor(Math.random() * 1000), name: name });
+  save();
+  return true;
+}
+
+/* ---------- 画面描画 ---------- */
+function renderHome() {
+  var doy = dayOfYear();
+  var care = CARE[doy % CARE.length];
+  var tip = TIPS[doy % TIPS.length];
+  return '' +
+    '<div style="margin-bottom:14px"><h1>親子のおだやかノート</h1><div class="sub">' + dispDate(todayStr()) + ' の ひとことコーチ</div></div>' +
+    '<div class="card warm"><span class="tag o">ねぎらい</span><div class="hello">' + esc(care) + '</div></div>' +
+    '<div class="card"><span class="tag">今日のひとこと</span>' +
+      '<h2>' + esc(tip.t) + '</h2><div>' + esc(tip.b) + '</div>' +
+      '<div class="step"><b>今日の一手</b><br>' + esc(tip.s) + '</div></div>' +
+    '<div class="stats">' +
+      '<div class="stat"><div class="big">' + weekGoods().length + '</div><div class="lab">今週の良かった点</div></div>' +
+      '<div class="stat"><div class="big">' + weekIrr().length + '</div><div class="lab">今週のイライラ</div></div>' +
+      '<div class="stat"><div class="big">' + weekForgot().length + '</div><div class="lab">今週の忘れ物</div></div>' +
+    '</div>' +
+    '<button class="btn o" data-go="pause">🍃 今、モヤッとした・イライラした</button>' +
+    '<button class="btn ghost" data-go="pause-dara">🕒 だらだら勉強が気になったとき</button>' +
+    '<button class="btn ghost" data-go="paper">📄 今日の学習ルーティンを確認する</button>' +
+    '<button class="btn ghost" data-go="forget">🧩 今夜の持ち物チェック・集中タイマー</button>' +
+    '<button class="btn ghost" data-go="log-good">☺️ 娘さんの良かった点を記録する</button>';
+}
+
+function renderVoice() {
+  var h = '<div class="seg">' +
+    '<button data-vmode="swap" class="' + (voiceMode === 'swap' ? 'on' : '') + '">言い換え</button>' +
+    '<button data-vmode="coach" class="' + (voiceMode === 'coach' ? 'on' : '') + '">傾聴・承認・質問</button>' +
+    '<button data-vmode="imsg" class="' + (voiceMode === 'imsg' ? 'on' : '') + '">私メッセージ</button></div>';
+  if (voiceMode === 'swap') {
+    h += '<div class="sub" style="margin-bottom:10px">言いそうになったら、ちらっと見てください</div>';
+    VOICES.forEach(function (v, i) {
+      var open = (voiceOpen === i);
+      h += '<div class="card"><div class="before">' + esc(v.b) + '</div>';
+      if (open) {
+        v.a.forEach(function (a) { h += '<div class="after">→ ' + esc(a) + '</div>'; });
+        h += '<div class="why">💡 ' + esc(v.w) + '</div>';
+        h += '<button class="btn ghost small" data-voice="-1" style="margin-top:10px">閉じる</button>';
+      } else {
+        h += '<button class="btn ghost small" data-voice="' + i + '" style="margin-top:10px">言い換えを見る</button>';
+      }
+      h += '</div>';
+    });
+  } else if (voiceMode === 'coach') {
+    var sc = SCENES[scene];
+    h += '<div class="card"><h2>3ステップの声かけ</h2>' +
+      '<div class="sub">指示や命令の前に、①聞く → ②認める → ③質問する の順番で。</div>' +
+      '<div class="chips">';
+    SCENES.forEach(function (s, i) {
+      h += '<button class="chip' + (scene === i ? ' on' : '') + '" data-scene="' + i + '">' + esc(s.n) + '</button>';
+    });
+    h += '</div></div>' +
+      '<div class="card green">' +
+      '<h3>① 傾聴(聞く)</h3><div class="say">' + esc(sc.l) + '</div>' +
+      '<h3>② 承認(認める)</h3><div class="say">' + esc(sc.a) + '</div>' +
+      '<h3>③ 質問(本人に考えてもらう)</h3><div class="say">' + esc(sc.q) + '</div>' +
+      '<div class="why">💡 「なぜ?」より「何?」「どうなったらいい?」で聞くと、責められた感じが減ります。</div></div>';
+  } else {
+    h += '<div class="card"><h2>「私」を主語にして伝える</h2>' +
+      '<div class="sub">「あなたは〜」ではなく、自分の気持ちと願いを落ち着いて伝える方法です。</div>' +
+      '<div class="step"><b>型</b><br>①見たこと → ②私の気持ち → ③してほしいこと → ④あとは本人に任せる</div></div>';
+    IMSG.forEach(function (m) {
+      h += '<div class="card"><div class="before">場面:' + esc(m.b) + '</div><div class="after">→ ' + esc(m.a) + '</div></div>';
+    });
+    h += '<div class="card warm"><h3>避けたい言い方</h3>' +
+      '<div class="ng">✕ 決めつけ:「あなたはいつもダラダラしてる」</div>' +
+      '<div class="ng">✕ 「べき」:「中学生なんだから宿題は終わらせるべき」</div>' +
+      '<div class="ng">✕ 気持ちを当てさせる:「何で怒ってるかわかるよね?」</div>' +
+      '<div class="why">💡 気持ちを受け止める(受容)ことと、してもいいと認める(許容)ことは別です。「忘れて困ったね」は、忘れ物を許したという意味ではありません。</div></div>';
+  }
+  return h;
+}
+
+var WHYS = [
+  { n: '疲れている・眠い',
+    see: 'ぼんやりしている、あくびが多い',
+    d: '先に10〜15分の休憩とおやつをはさむ。就寝時間を少し早める。今日は量を減らして、区切りよく終わる日を作る。',
+    note: '睡眠不足は集中力を落とす代表的な原因とされています。' },
+  { n: '何をどこまでやるか決まっていない',
+    see: '始めても進み具合が見えず、何から手をつけるか迷っている',
+    d: '娘さんに「今日のゴール」を3つまで書いてもらう。終わりが見えると、動き出しやすくなります。',
+    note: '家での勉強の時間ややることが決まっていないことが、習慣がつかない大きな原因とされています。' },
+  { n: '始めるまでが重い(切り替え)',
+    see: '机に座るまでに時間がかかる',
+    d: '帰宅 → おやつ → 机、のように毎日同じ流れで始める。最初は1〜2分で終わる簡単なものから。',
+    note: '毎日同じきっかけで机に向かう仕組みが、習慣化のコツとされています。' },
+  { n: '集中が長く続かない',
+    see: '途中でぼんやりしたり、別のことに手が伸びたりする',
+    d: '15〜25分で区切り、短い休憩をはさむ。「集中タイマー」を娘さん自身に押してもらう。',
+    note: '集中力は長く続かないもので、作業と休憩を短く繰り返すほうが効率的とされています。' },
+  { n: '休憩が長引く',
+    see: '一度休むと、再開までに時間がかかる',
+    d: '休憩も5分のタイマーで区切る。再開の合図を、娘さんと一緒に決めておく。',
+    note: '' },
+  { n: 'わからなくて手が止まっている',
+    see: '同じところで止まっている、ため息が多い',
+    d: '責めずに「どこで止まってる?」とだけ聞く。解説は、頼まれたときだけにする。',
+    note: '' }
+];
+
+function renderWhy() {
+  var h = '<div class="card"><h2>だらだらの理由さがし</h2>' +
+    '<div class="sub">娘さんの様子に近いものをタップしてください(正解探しではなく、見方を変えるヒントです)。</div><div class="chips">';
+  WHYS.forEach(function (w, i) {
+    h += '<button class="chip' + (whyIdx === i ? ' on' : '') + '" data-why="' + i + '">' + esc(w.n) + '</button>';
+  });
+  h += '</div></div>';
+  if (whyIdx >= 0) {
+    var w = WHYS[whyIdx];
+    h += '<div class="card green"><h2>' + esc(w.n) + '</h2>' +
+      '<div class="sub">こんな様子のとき</div><div class="say">' + esc(w.see) + '</div>' +
+      '<h3>試してみること</h3><div class="say">' + esc(w.d) + '</div>' +
+      (w.note ? '<div class="why">💡 ' + esc(w.note) + '</div>' : '') + '</div>';
+  }
+  h += '<div class="card warm"><h2>「パパッと」を叶える関わり方</h2>' +
+    '<div class="say"><b>効率は「区切る・決める・休む」で上がる。</b>長くやらせるより、短く集中させるほうが成果が出やすく、時間が長くなるほど学習効率は下がるとされています。</div>' +
+    '<div class="say"><b>勉強中は話しかけない。</b>声かけは区切りがついてから。そのときは「お疲れさま」が先です。</div>' +
+    '<div class="say"><b>親が先生のように直接介入しすぎない。</b>勉強への直接の介入は、うまくいかず親子関係が悪くなる例が多いとも言われます。仕組みを整えて、あとは見守ります。</div></div>';
+  return h;
+}
+
+function fmt(sec) { return pad(Math.floor(sec / 60)) + ':' + pad(sec % 60); }
+function startTimer(kind) {
+  var len = (kind === 'break') ? 5 : timer.mins;
+  timer.kind = kind; timer.endAt = Date.now() + len * 60000; timer.running = true; timer.done = '';
+  render();
+}
+function stopTimer() { timer.running = false; timer.done = ''; render(); }
+function finishTimer() {
+  timer.running = false;
+  if (timer.kind === 'focus') {
+    var t = todayStr();
+    state.sessions[t] = (state.sessions[t] || 0) + 1; save();
+    timer.done = 'focus';
+    toast('お疲れさま。1セット完了です');
+  } else {
+    timer.done = 'break';
+    toast('休憩おわり');
+  }
+  if (tab === 'forget' && forgetMode === 'focus') render();
+}
+function tick() {
+  if (!timer.running) return;
+  var left = Math.max(0, Math.ceil((timer.endAt - Date.now()) / 1000));
+  var el = document.getElementById('timer-disp');
+  if (el) el.textContent = fmt(left);
+  if (left <= 0) finishTimer();
+}
+function todayGoals() { return state.goals[todayStr()] || []; }
+function addGoal(text) {
+  text = (text || '').trim();
+  if (!text) return false;
+  var t = todayStr();
+  if (!state.goals[t]) state.goals[t] = [];
+  state.goals[t].push({ id: 'g' + Date.now() + Math.floor(Math.random() * 1000), text: text, done: false });
+  save();
+  return true;
+}
+
+function renderFocus() {
+  var goals = todayGoals();
+  var sess = state.sessions[todayStr()] || 0;
+  var h = '<div class="card"><h2>今日のゴール</h2><div class="sub">娘さん自身に決めてもらうと「自分で決めた」感覚が残ります(3つまでがおすすめ)。</div>';
+  if (!goals.length) h += '<div class="empty">まだゴールがありません</div>';
+  goals.forEach(function (g) {
+    h += '<div class="chk' + (g.done ? ' done' : '') + '">' +
+      '<button class="box" data-goaltog="' + esc(g.id) + '"><span class="mark">' + (g.done ? '✓' : '') + '</span><span class="nm">' + esc(g.text) + '</span></button>' +
+      '<button class="del" data-del="goal:' + esc(g.id) + '">削除</button></div>';
+  });
+  h += '<input type="text" id="goal-text" placeholder="例:数学ワーク2ページ" style="margin-top:8px">' +
+    '<button class="btn ghost" data-goaladd="1">ゴールを追加</button></div>';
+
+  h += '<div class="card"><h2>集中タイマー</h2>';
+  if (timer.running) {
+    var left = Math.max(0, Math.ceil((timer.endAt - Date.now()) / 1000));
+    h += '<div class="sub" style="text-align:center">' + (timer.kind === 'focus' ? '集中タイム中。声かけはお休みにしましょう' : '休憩中') + '</div>' +
+      '<div class="timer-disp" id="timer-disp">' + fmt(left) + '</div>' +
+      '<button class="btn ghost" data-timerstop="1">中止する</button>';
+  } else {
+    if (timer.done === 'focus') {
+      h += '<div class="step" style="border-left-color:#5b8f85;margin-bottom:10px">お疲れさま。1セット完了です。5分休憩して、また1セットでも、今日はここまででもOKです。</div>';
+    } else if (timer.done === 'break') {
+      h += '<div class="step" style="border-left-color:#5b8f85;margin-bottom:10px">休憩おわり。次のセットを始めますか?</div>';
+    }
+    h += '<div class="sub">1セットの長さ</div><div class="chips">';
+    [15, 20, 25].forEach(function (m) {
+      h += '<button class="chip' + (timer.mins === m ? ' on' : '') + '" data-fmin="' + m + '">' + m + '分</button>';
+    });
+    h += '</div><div class="timer-disp">' + fmt(timer.mins * 60) + '</div>' +
+      '<button class="btn" data-timerstart="focus">集中スタート</button>' +
+      '<button class="btn ghost" data-timerstart="break">休憩5分</button>';
+  }
+  h += '<div class="why">💡 親が押さず、娘さんに押してもらいます。画面がスリープしても、戻ったときに残り時間は正しく表示されます(終了の音は鳴りません)。</div></div>';
+  h += '<div class="stats"><div class="stat"><div class="big">' + sess + '</div><div class="lab">今日の集中セット</div></div></div>';
+  return h;
+}
+
+
+/* ---- おうち学習ルーティン(娘さんの記帳用紙と同じ内容) ---- */
+var RSUBJ = {
+  alg: { n: '代数', t: '2問', must: true },
+  geo: { n: '幾何', t: '2問', must: true },
+  eng: { n: '英語', t: '1P', must: true },
+  jpn: { n: '国語', t: '漢字/徹底演習/文法いずれか1P', must: false },
+  soc: { n: '社会', t: '1P', must: false },
+  phy: { n: '物理生物', t: '1P', must: false },
+  ear: { n: '地学', t: '1P', must: false }
+};
+var RDAYS = {
+  1: { n: '月', cls: '代数/社会/英語', t: ['alg', 'geo', 'eng', 'jpn', 'soc'] },
+  2: { n: '火', cls: '地学/社会/幾何', t: ['alg', 'geo', 'eng', 'soc', 'ear'] },
+  3: { n: '水', cls: '物理生物/社会/国語', t: ['alg', 'geo', 'eng', 'jpn', 'soc', 'phy'] },
+  4: { n: '木', cls: '物理生物/地学/代数', t: ['alg', 'geo', 'eng', 'phy', 'ear'] },
+  5: { n: '金', cls: '代数/国語/社会', t: ['alg', 'geo', 'eng', 'jpn', 'soc', 'phy'] },
+  6: { n: '土', cls: '国語/幾何', t: ['alg', 'geo', 'eng', 'jpn', 'soc', 'phy', 'ear'] },
+  0: { n: '日', cls: 'お休み', t: ['alg', 'geo', 'eng', 'soc', 'phy', 'ear'] }
+};
+function dayInfo(dateStr) {
+  var p = dateStr.split('-');
+  return RDAYS[new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10)).getDay()];
+}
+function routineStat(dateStr) {
+  var info = dayInfo(dateStr), c = state.routine[dateStr] || {};
+  var r = { total: info.t.length, done: 0, mustTotal: 0, mustDone: 0 };
+  info.t.forEach(function (id) {
+    var on = !!c[id];
+    if (on) r.done++;
+    if (RSUBJ[id].must) { r.mustTotal++; if (on) r.mustDone++; }
+  });
+  return r;
+}
+function renderPaper() {
+  var t = todayStr(), info = dayInfo(t), c = state.routine[t] || {};
+  var st = routineStat(t);
+  var h = '<div class="card"><h2>今日(' + info.n + '曜日)のルーティン</h2>' +
+    '<div class="sub">学校の授業: ' + esc(info.cls) + '</div>' +
+    '<div class="sub" style="margin-bottom:6px">娘さんが記帳用紙の枠に書いた科目を、紙を見て、タップしてチェックします。</div>' +
+    '<div class="sub">' + st.done + ' / ' + st.total + ' 科目(毎日必ずの3科目: ' + st.mustDone + ' / ' + st.mustTotal + ')</div>' +
+    '<div class="progress"><div style="width:' + Math.round(st.done / st.total * 100) + '%"></div></div>';
+  info.t.forEach(function (id) {
+    var sj = RSUBJ[id], on = !!c[id];
+    h += '<div class="chk' + (on ? ' done' : '') + '"><button class="box" data-rt="' + id + '">' +
+      '<span class="mark">' + (on ? '✓' : '') + '</span><span class="nm"><b>' + esc(sj.n) + '</b> ' + esc(sj.t) + (sj.must ? ' ★' : '') + '</span></button></div>';
+  });
+  if (st.done === st.total) {
+    h += '<div class="step" style="border-left-color:#5b8f85">今日の分は全部そろいました。「お疲れさま」を先に伝えましょう。</div>';
+  } else if (st.mustDone === st.mustTotal) {
+    h += '<div class="step" style="border-left-color:#5b8f85">毎日必ずの3科目(★)はそろっています。</div>';
+  }
+  h += '<div class="why">★は、用紙のルールで「毎日必ず」の科目です。</div></div>';
+
+  h += '<div class="card green"><h2>紙を見るときの声かけ</h2>' +
+    '<h3>承認</h3><div class="say">「今日も書いてるね」「5時起きのあとに、ここまでやったんだね」</div>' +
+    '<h3>質問</h3><div class="say">「今日、一番進んだのはどれ?」「答え合わせはどうだった?」「明日の最初は何から?」</div>' +
+    '<h3>やらないこと</h3><div class="ng">✕ 「これだけ?」と少なさを指摘する</div>' +
+    '<div class="ng">✕ 書き方や字、間違いを直す</div>' +
+    '<div class="ng">✕ 他の子の勉強量と比べる</div></div>';
+
+  h += '<div class="card warm"><h2>続けるコツ</h2>' +
+    '<div class="say">・見るタイミングを娘さんと決めておく(例:夕食後に1分)</div>' +
+    '<div class="say">・まず「書いてあること」だけを認める。内容の出来は問わない</div>' +
+    '<div class="say">・疲れた日は、毎日必ずの3科目(★)だけでもOK、と娘さんと先に決めておく</div>' +
+    '<div class="say">・毎日の科目数が多い(平日5〜6科目、土曜は7科目)ので、「やらされている」感が出たら、量を一緒に見直す</div>' +
+    '<div class="say">・親が代わりに書かない。書くのは娘さん自身</div></div>';
+  return h;
+}
+
+function renderForget() {
+  var h = '<div class="seg">' +
+    '<button data-fmode="focus" class="' + (forgetMode === 'focus' ? 'on' : '') + '">集中タイマー</button>' +
+    '<button data-fmode="paper" class="' + (forgetMode === 'paper' ? 'on' : '') + '">今日のルーティン</button>' +
+    '<button data-fmode="why" class="' + (forgetMode === 'why' ? 'on' : '') + '">だらだらの理由</button>' +
+    '<button data-fmode="check" class="' + (forgetMode === 'check' ? 'on' : '') + '">前夜チェック</button>' +
+    '<button data-fmode="log" class="' + (forgetMode === 'log' ? 'on' : '') + '">忘れ物記録</button>' +
+    '<button data-fmode="tips" class="' + (forgetMode === 'tips' ? 'on' : '') + '">ヒント</button></div>';
+  if (forgetMode === 'focus') {
+    h += renderFocus();
+  } else if (forgetMode === 'paper') {
+    h += renderPaper();
+  } else if (forgetMode === 'why') {
+    h += renderWhy();
+  } else if (forgetMode === 'check') {
+    var total = state.items.length, done = checkedCount();
+    h += '<div class="card"><h2>明日の持ち物チェック</h2>';
+    if (!total) {
+      h += '<div class="empty">まだ項目がありません。下の候補をタップするか、娘さんと一緒に追加してください。</div>';
+    } else {
+      h += '<div class="sub">' + done + ' / ' + total + ' 完了</div>' +
+        '<div class="progress"><div style="width:' + Math.round(done / total * 100) + '%"></div></div>';
+      state.items.forEach(function (it) {
+        var on = !!((state.checks[todayStr()] || {})[it.id]);
+        h += '<div class="chk' + (on ? ' done' : '') + '">' +
+          '<button class="box" data-chk="' + esc(it.id) + '"><span class="mark">' + (on ? '✓' : '') + '</span><span class="nm">' + esc(it.name) + '</span></button>' +
+          '<button class="del" data-del="item:' + esc(it.id) + '">削除</button></div>';
+      });
+      if (allChecked(todayStr())) {
+        h += '<div class="step" style="border-left-color:#5b8f85">準備完了です。朝は確認だけでOK。お疲れさまでした。</div>';
+      }
+    }
+    h += '</div>';
+    h += '<div class="card"><h2>項目を追加</h2><div class="chips">';
+    PRESET_ITEMS.forEach(function (p) {
+      if (!hasItem(p)) h += '<button class="chip" data-preset="' + esc(p) + '">+ ' + esc(p) + '</button>';
+    });
+    h += '</div><input type="text" id="item-text" placeholder="自由に追加(例:体育館シューズ)">' +
+      '<button class="btn" data-additem="1">追加する</button>' +
+      '<div class="why">💡 チェック表は娘さん自身に書いてもらうと続きやすくなります。</div></div>';
+  } else if (forgetMode === 'log') {
+    h += '<div class="card"><h2>忘れ物があった日の記録</h2><div class="sub" style="margin-bottom:8px">責めるためではなく、「よく忘れるもの」を見つけるための記録です。</div>';
+    if (state.items.length) {
+      h += '<div class="chips">';
+      state.items.forEach(function (it) { h += '<button class="chip" data-fquick="' + esc(it.name) + '">' + esc(it.name) + '</button>'; });
+      h += '</div>';
+    }
+    h += '<input type="text" id="forgot-text" placeholder="何を忘れましたか?(例:数学のプリント)">' +
+      '<button class="btn o" data-saveforgot="1">記録する</button></div>';
+    var fl = state.forgot.slice().reverse().slice(0, 15);
+    h += '<div class="card"><h2>最近の記録</h2>';
+    if (!fl.length) h += '<div class="empty">まだ記録がありません</div>';
+    fl.forEach(function (f) {
+      h += '<div class="rec"><div class="row"><div>' + esc(f.text) + '<div class="meta">' + dispDate(f.d) + '</div></div>' +
+        '<button class="del" data-del="forgot:' + f.ts + '">削除</button></div></div>';
+    });
+    h += '</div>';
+  } else {
+    FORGET_TIPS.forEach(function (t) {
+      h += '<div class="card"><h2>' + esc(t.t) + '</h2><div>' + esc(t.b) + '</div></div>';
+    });
+    h += '<div class="card warm"><h3>忘れた日の声かけ</h3>' +
+      '<div class="before">「なんで忘れるの!」</div>' +
+      '<div class="after">→ 「そっか、困ったね。次はどうしたら忘れなさそう?」</div></div>';
+  }
+  return h;
+}
+
+function pauseMessage(t) {
+  if (t === 'SNSを見た直後') {
+    return [
+      'SNSに出てくるのは、うまくいった家庭の「いちばん良い場面」だけです。その裏の苦労や、うまくいかなかった日は映りません。',
+      '見えているのは全体のごく一部です。進学校の中1が、朝5時起きで通学し、部活もして、勉強まで回している。それだけで今も十分すごい現在地です。',
+      '比べる相手は、1か月前の娘さんです。'
+    ];
+  }
+  if (t === 'だらだら勉強') {
+    return [
+      'だらだらに見えるときは、「疲れている」「何から始めるか迷っている」「休憩が長引いている」など、理由があることが多いものです。',
+      '朝5時起きで部活のあとは、集中力が続きにくい時間帯です。睡眠不足は集中力が落ちる代表的な原因とされています。',
+      '「パパッと終わらせたい」は自然な願いです。効率は、短く区切る・ゴールを決める・疲れをとる、の3つで上がりやすくなります。',
+      '「仕組み」タブの「集中タイマー」と「だらだらの理由さがし」を使ってみてください。'
+    ];
+  }
+  if (t === '同級生の話を聞いた') {
+    return [
+      '同級生の話は、その子の「得意な面」だけが耳に入ってきます。その子にも、娘さんの知らない苦手や大変さがあるはずです。',
+      '進学校では、周りがみんな優秀に見えやすいものです。娘さん自身も、そう感じているかもしれません。',
+      '娘さんがその話をしてくれるのは、家で話せている証拠です。比べる言葉が返ると、話してくれなくなることがあります。',
+      '次にその話が出たら、「その子のどこがすごいと思った?」と聞くと、娘さんの気持ちが見えてきます。'
+    ];
+  }
+  if (t === '宿題・課題の話' || t === '予定どおり進まない') {
+    return [
+      '直前に慌てるのは、この年ごろの「あるある」です。先を見通して段取りする力は、まだ育っている途中です。',
+      '今すぐ変えようとせず、「いつやる?」と1つだけ聞いてみてください。'
+    ];
+  }
+  if (t === '忘れ物') {
+    return [
+      '忘れ物は、叱るより仕組みで減ります。叱られ続けると自己否定的になりやすいとも言われています。',
+      'まず「忘れなかった日」を思い出して、前夜チェックの仕組みを一緒に作ってみてください。'
+    ];
+  }
+  if (t === '勉強中の姿勢・態度') {
+    return [
+      '姿勢への注意は、「何も知らないのに口出ししないで」につながりやすい場面です。今日は一言も言わずに見守り、終わったあとに「お疲れさま」だけ伝えてみてください。'
+    ];
+  }
+  if (t === '娘の言い返し') {
+    return [
+      '言い返しは、自分で考えたい気持ちが育っているサインでもあります。受け止めきれない日は、いったん離れて落ち着いてから話せば大丈夫です。'
+    ];
+  }
+  if (t === '自分が疲れている') {
+    return [
+      '平日はほぼお一人で、お仕事・家事・娘さんの支度や勉強まで担っているのですから、余裕がなくなるのは自然なことです。',
+      '今日は「最低限できたらOK」にしましょう。声かけを1つ減らす、チェックは娘さんに任せるなど、減らす工夫も大切です。'
+    ];
+  }
+  return [
+    'その気持ちは自然なものです。まずは気持ちが動いた自分を、否定しなくて大丈夫です。'
+  ];
+}
+
+function renderPause() {
+  var h = '<h1>ひと呼吸</h1><div class="sub" style="margin-bottom:12px">気持ちが動いたときに、1分だけ立ち止まる場所です</div>';
+  h += '<div class="card"><h2>1. 何がきっかけでしたか?</h2><div class="chips">';
+  TRIGGERS.forEach(function (t) {
+    h += '<button class="chip' + (pauseTrigger === t ? ' on' : '') + '" data-ptrig="' + esc(t) + '">' + esc(t) + '</button>';
+  });
+  h += '</div></div>';
+  if (pauseTrigger) {
+    var msgs = pauseMessage(pauseTrigger);
+    h += '<div class="card green"><h2>2. 少し引いて見てみると</h2>';
+    msgs.forEach(function (m) { h += '<p style="margin-bottom:8px">' + esc(m) + '</p>'; });
+    h += '</div>';
+    h += '<div class="card"><h2>3. ゆっくり呼吸</h2><div class="sub">4秒吸って、6秒かけて吐きます(2〜3回)</div>' +
+      '<div class="breath-area"><div class="circle' + (breathing ? ' run' : '') + '">' + (breathing ? 'すーっ…ふーっ…' : '呼吸') + '</div>' +
+      '<button class="btn ghost small" data-breath="1">' + (breathing ? '止める' : 'はじめる') + '</button></div></div>';
+    h += '<div class="card warm"><h2>4. 娘さんの頑張りをひとつ思い出す</h2>' +
+      '<div class="sub">今朝は何時に起きましたか? 部活のあと、どんな顔で帰ってきましたか?</div>' +
+      '<button class="btn" data-go="log-good">良かった点を記録する</button>' +
+      '<button class="btn ghost" data-go="log-irr">イライラ記録をつける</button></div>';
+  }
+  return h;
+}
+
+function renderLog() {
+  var h = '<div class="seg"><button data-logmode="irr" class="' + (logMode === 'irr' ? 'on' : '') + '">イライラ記録</button>' +
+          '<button data-logmode="good" class="' + (logMode === 'good' ? 'on' : '') + '">良かった点</button></div>';
+  if (logMode === 'irr') {
+    h += '<div class="card"><h2>どんなときでしたか?</h2><div class="chips">';
+    TRIGGERS.forEach(function (t) {
+      h += '<button class="chip o' + (irrTrigger === t ? ' on' : '') + '" data-itrig="' + esc(t) + '">' + esc(t) + '</button>';
+    });
+    h += '</div><h2 style="margin-top:12px">イライラの強さ</h2><div class="lvl">';
+    for (var i = 1; i <= 5; i++) h += '<button data-ilvl="' + i + '" class="' + (irrLevel === i ? 'on' : '') + '">' + i + '</button>';
+    h += '</div><div class="sub">1=少しモヤッ ／ 5=かなり強い</div>' +
+      '<textarea id="irr-note" placeholder="ひとことメモ(任意)" style="margin-top:10px"></textarea>' +
+      '<button class="btn o" data-save="irr">記録する</button></div>';
+    var list = state.irritations.slice().reverse().slice(0, 15);
+    h += '<div class="card"><h2>最近の記録</h2>';
+    if (!list.length) h += '<div class="empty">まだ記録がありません</div>';
+    list.forEach(function (r) {
+      h += '<div class="rec"><div class="row"><div><b>' + esc(r.trigger) + '</b>(強さ ' + r.level + ')' +
+        (r.note ? '<br>' + esc(r.note) : '') + '<div class="meta">' + dispDate(r.d) + '</div></div>' +
+        '<button class="del" data-del="irr:' + r.ts + '">削除</button></div></div>';
+    });
+    h += '</div>';
+  } else {
+    h += '<div class="card"><h2>今日の「良かった点」</h2>' +
+      '<div class="chips"><button class="chip' + (goodKind === '今日の頑張り' ? ' on' : '') + '" data-gkind="今日の頑張り">今日の頑張り</button>' +
+      '<button class="chip' + (goodKind === '前よりできるように' ? ' on' : '') + '" data-gkind="前よりできるように">前よりできるように</button></div>' +
+      '<div class="sub">タップで入力できます</div><div class="chips">';
+    GOOD_QUICK.forEach(function (q) { h += '<button class="chip" data-gquick="' + esc(q) + '">' + esc(q) + '</button>'; });
+    h += '</div><input type="text" id="good-text" placeholder="自由に書く(例:自分から○○を始めた)">' +
+      '<button class="btn" data-save="good">記録する</button></div>';
+    var gl = state.goods.slice().reverse().slice(0, 20);
+    h += '<div class="card"><h2>これまでの良かった点</h2>';
+    if (!gl.length) h += '<div class="empty">まだ記録がありません</div>';
+    gl.forEach(function (g) {
+      h += '<div class="rec"><div class="row"><div>' + esc(g.text) +
+        '<div class="meta">' + dispDate(g.d) + ' ・ ' + esc(g.kind) + '</div></div>' +
+        '<button class="del" data-del="good:' + g.ts + '">削除</button></div></div>';
+    });
+    h += '</div>';
+  }
+  return h;
+}
+
+function renderReview() {
+  var wi = weekIrr(), wg = weekGoods(), pw = prevWeekIrr(), wf = weekForgot();
+  var h = '<h1>この1週間のふり返り</h1><div class="sub" style="margin-bottom:12px">直近7日間の記録から</div>';
+  h += '<div class="stats">' +
+    '<div class="stat"><div class="big">' + wg.length + '</div><div class="lab">良かった点</div></div>' +
+    '<div class="stat"><div class="big">' + wi.length + '</div><div class="lab">イライラ記録</div></div>' +
+    '<div class="stat"><div class="big">' + wf.length + '</div><div class="lab">忘れ物</div></div></div>';
+  h += '<div class="card" style="margin-top:14px"><h2>気持ちが動いたきっかけ</h2>';
+  if (!wi.length) {
+    h += '<div class="empty">今週の記録はまだありません</div>';
+  } else {
+    var counts = {};
+    wi.forEach(function (r) { counts[r.trigger] = (counts[r.trigger] || 0) + 1; });
+    var names = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; });
+    var max = counts[names[0]];
+    names.forEach(function (n) {
+      h += '<div class="bar-row"><div class="name">' + esc(n) + '</div><div class="bar"><div style="width:' +
+        Math.round(counts[n] / max * 100) + '%"></div></div><div class="n">' + counts[n] + '</div></div>';
+    });
+    var top = names[0];
+    var msg;
+    if (top === 'SNSを見た直後') msg = 'SNSを見た直後が一番多い週でした。見る時間帯を決める、夜は見ないなど、入口を少し減らすだけで気持ちが軽くなることがあります。';
+    else if (top === 'だらだら勉強') msg = 'だらだら勉強が気になる場面が多い週でした。「仕組み」タブの集中タイマーと、だらだらの理由さがしを試して、急かす声かけを1つ減らしてみてください。';
+    else if (top === '同級生の話を聞いた') msg = '同級生の話がきっかけの週でした。娘さんの話を「聞く」ことと、娘さん自身を「認める」ことを意識すると、比べる気持ちが少し落ち着きます。';
+    else if (top === '自分が疲れている') msg = '「自分が疲れている」が一番多い週でした。平日ほぼお一人で回しているのですから当然です。今週は声かけを1つ減らす、チェックは娘さんに任せるなど、減らす工夫を試してみてください。';
+    else msg = '「' + top + '」の場面が一番多い週でした。この場面だけ、声かけを1つ減らす、または言い換えてみるのがおすすめです。';
+    h += '<div class="step" style="margin-top:12px">' + esc(msg) + '</div>';
+    if (pw.length) {
+      var diff = wi.length - pw.length;
+      h += '<div class="sub" style="margin-top:8px">先週より ' + (diff > 0 ? diff + '件 多め' : diff < 0 ? (-diff) + '件 少なめ' : '同じ件数') + 'でした。</div>';
+    }
+  }
+  h += '</div>';
+
+  /* 忘れ物 */
+  var okDays = 0;
+  var rtDone = 0, rtTotal = 0, rtMustDays = 0;
+  for (var q = 0; q < 7; q++) { var rs = routineStat(daysAgoStr(q)); rtDone += rs.done; rtTotal += rs.total; if (rs.mustDone === rs.mustTotal && rs.mustTotal > 0) rtMustDays++; }
+  var focusDays = 0;
+  for (var k = 0; k < 7; k++) { if (allChecked(daysAgoStr(k))) okDays++; if ((state.sessions[daysAgoStr(k)] || 0) > 0) focusDays++; }
+  h += '<div class="card"><h2>仕組みの使用状況・忘れ物</h2>' +
+    '<div class="sub">前夜チェックを全部済ませた日: ' + okDays + ' / 7日<br>集中タイマーを使った日: ' + focusDays + ' / 7日<br>ルーティン達成: ' + rtDone + ' / ' + rtTotal + ' 科目、毎日必ずの3科目がそろった日: ' + rtMustDays + ' / 7日</div>';
+  if (!wf.length) {
+    h += '<div class="empty">今週の忘れ物の記録はありません</div>';
+  } else {
+    var fc = {};
+    wf.forEach(function (f) { fc[f.text] = (fc[f.text] || 0) + 1; });
+    var fn = Object.keys(fc).sort(function (a, b) { return fc[b] - fc[a]; });
+    var fmax = fc[fn[0]];
+    fn.slice(0, 5).forEach(function (n) {
+      h += '<div class="bar-row"><div class="name">' + esc(n) + '</div><div class="bar"><div style="width:' +
+        Math.round(fc[n] / fmax * 100) + '%"></div></div><div class="n">' + fc[n] + '</div></div>';
+    });
+    var topF = fn[0];
+    if (!hasItem(topF)) {
+      h += '<button class="btn ghost" data-addtocheck="' + esc(topF) + '">「' + esc(topF) + '」を前夜チェックに追加する</button>';
+    } else {
+      h += '<div class="step" style="margin-top:10px">「' + esc(topF) + '」はすでにチェック表にあります。確認のタイミングを娘さんと一緒に考えてみてください。</div>';
+    }
+  }
+  h += '</div>';
+
+  h += '<div class="card green"><h2>今週見つけた良かった点</h2>';
+  if (!wg.length) {
+    h += '<div class="empty">記録するとここに並びます</div>';
+  } else {
+    wg.slice().reverse().forEach(function (g) {
+      h += '<div class="rec">' + esc(g.text) + '<div class="meta">' + dispDate(g.d) + ' ・ ' + esc(g.kind) + '</div></div>';
+    });
+  }
+  h += '</div>';
+
+  h += '<div class="card ref"><h2>参考にした情報</h2><div class="sub" style="margin-bottom:6px">このアプリのヒントは、次のような公開情報をもとにまとめています。専門家の診断や個別の助言ではありません。</div>';
+  REFS.forEach(function (r) { h += '<a href="' + esc(r[1]) + '" target="_blank" rel="noopener">' + esc(r[0]) + '</a>'; });
+  h += '</div>';
+  h += '<div class="note">記録はこの端末のブラウザ内にのみ保存されます</div>';
+  return h;
+}
+
+function render() {
+  var html = '';
+  if (tab === 'home') html = renderHome();
+  else if (tab === 'voice') html = renderVoice();
+  else if (tab === 'forget') html = renderForget();
+  else if (tab === 'pause') html = renderPause();
+  else if (tab === 'log') html = renderLog();
+  else html = renderReview();
+  view.innerHTML = html;
+  var btns = document.querySelectorAll('#nav button');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].className = (btns[i].getAttribute('data-tab') === tab) ? 'on' : '';
+  }
+}
+
+function goTab(t) {
+  tab = t; breathing = false;
+  render();
+  document.getElementById('main').scrollTop = 0;
+}
+
+/* ---------- 保存処理 ---------- */
+function saveIrr() {
+  if (!irrTrigger) { toast('きっかけを選んでください'); return; }
+  if (!irrLevel) { toast('強さを選んでください'); return; }
+  var noteEl = document.getElementById('irr-note');
+  state.irritations.push({ d: todayStr(), ts: Date.now(), trigger: irrTrigger, level: irrLevel, note: noteEl ? noteEl.value.trim() : '' });
+  save(); irrTrigger = ''; irrLevel = 0;
+  toast('記録しました。お疲れさまです');
+  render();
+}
+function saveGood() {
+  var el = document.getElementById('good-text');
+  var text = el ? el.value.trim() : '';
+  if (!text) { toast('内容を入力するか、候補をタップしてください'); return; }
+  state.goods.push({ d: todayStr(), ts: Date.now(), kind: goodKind, text: text });
+  save();
+  toast('素敵な発見ですね');
+  render();
+}
+function saveForgot() {
+  var el = document.getElementById('forgot-text');
+  var text = el ? el.value.trim() : '';
+  if (!text) { toast('何を忘れたか入力するか、候補をタップしてください'); return; }
+  state.forgot.push({ d: todayStr(), ts: Date.now(), text: text });
+  save();
+  toast('記録しました。責めずに「次はどうする?」を一緒に');
+  render();
+}
+function toggleCheck(id) {
+  var t = todayStr();
+  if (!state.checks[t]) state.checks[t] = {};
+  state.checks[t][id] = !state.checks[t][id];
+  save();
+  render();
+}
+
+/* ---------- イベント(委譲) ---------- */
+document.addEventListener('click', function (e) {
+  var el = e.target;
+  while (el && el !== document.body && !(el.dataset && Object.keys(el.dataset).length)) el = el.parentNode;
+  if (!el || !el.dataset) return;
+  var d = el.dataset;
+  if (d.tab) { goTab(d.tab); return; }
+  if (d.go) {
+    if (d.go === 'log-good') { logMode = 'good'; goTab('log'); }
+    else if (d.go === 'log-irr') { logMode = 'irr'; goTab('log'); }
+    else if (d.go === 'paper') { forgetMode = 'paper'; goTab('forget'); }
+    else if (d.go === 'pause-dara') { pauseTrigger = 'だらだら勉強'; goTab('pause'); }
+    else goTab(d.go);
+    return;
+  }
+  if (d.vmode) { voiceMode = d.vmode; render(); return; }
+  if (d.voice !== undefined) { voiceOpen = parseInt(d.voice, 10); render(); return; }
+  if (d.scene !== undefined) { scene = parseInt(d.scene, 10); render(); return; }
+  if (d.fmode) { forgetMode = d.fmode; render(); return; }
+  if (d.chk) { toggleCheck(d.chk); return; }
+  if (d.preset) { addItem(d.preset); render(); return; }
+  if (d.additem) {
+    var it = document.getElementById('item-text');
+    var v = it ? it.value.trim() : '';
+    if (!v) { toast('項目を入力してください'); return; }
+    if (!addItem(v)) { toast('すでにある項目です'); return; }
+    render(); return;
+  }
+  if (d.rt) { var rd = todayStr(); if (!state.routine[rd]) state.routine[rd] = {}; state.routine[rd][d.rt] = !state.routine[rd][d.rt]; save(); render(); return; }
+  if (d.why !== undefined) { whyIdx = parseInt(d.why, 10); render(); return; }
+  if (d.fmin) { timer.mins = parseInt(d.fmin, 10); render(); return; }
+  if (d.timerstart) { startTimer(d.timerstart); return; }
+  if (d.timerstop) { stopTimer(); return; }
+  if (d.goaladd) {
+    var ge = document.getElementById('goal-text');
+    if (!addGoal(ge ? ge.value : '')) { toast('ゴールを入力してください'); return; }
+    render(); return;
+  }
+  if (d.goaltog) {
+    todayGoals().forEach(function (g) { if (g.id === d.goaltog) g.done = !g.done; });
+    save(); render(); return;
+  }
+  if (d.fquick) { var f = document.getElementById('forgot-text'); if (f) f.value = d.fquick; return; }
+  if (d.saveforgot) { saveForgot(); return; }
+  if (d.addtocheck) { if (addItem(d.addtocheck)) toast('前夜チェックに追加しました'); render(); return; }
+  if (d.ptrig) { pauseTrigger = d.ptrig; breathing = false; render(); return; }
+  if (d.breath) { breathing = !breathing; render(); return; }
+  if (d.logmode) { logMode = d.logmode; render(); return; }
+  if (d.itrig) { irrTrigger = d.itrig; keepText(); return; }
+  if (d.ilvl) { irrLevel = parseInt(d.ilvl, 10); keepText(); return; }
+  if (d.gkind) { goodKind = d.gkind; keepText(); return; }
+  if (d.gquick) { var g = document.getElementById('good-text'); if (g) g.value = d.gquick; return; }
+  if (d.save === 'irr') { saveIrr(); return; }
+  if (d.save === 'good') { saveGood(); return; }
+  if (d.del) {
+    pendingDelete = d.del;
+    document.getElementById('confirm-modal').classList.add('active');
+    return;
+  }
+});
+
+/* 入力中のテキストを保ったまま再描画 */
+function keepText() {
+  var n = document.getElementById('irr-note'), g = document.getElementById('good-text');
+  var nv = n ? n.value : '', gv = g ? g.value : '';
+  render();
+  var n2 = document.getElementById('irr-note'), g2 = document.getElementById('good-text');
+  if (n2) n2.value = nv;
+  if (g2) g2.value = gv;
+}
+
+document.getElementById('m-no').onclick = function () {
+  pendingDelete = null;
+  document.getElementById('confirm-modal').classList.remove('active');
+};
+document.getElementById('m-yes').onclick = function () {
+  if (pendingDelete) {
+    var idx = pendingDelete.indexOf(':');
+    var kind = pendingDelete.slice(0, idx);
+    var rest = pendingDelete.slice(idx + 1);
+    if (kind === 'item') {
+      state.items = state.items.filter(function (r) { return r.id !== rest; });
+    } else if (kind === 'goal') {
+      var gd = todayStr();
+      state.goals[gd] = (state.goals[gd] || []).filter(function (r) { return r.id !== rest; });
+    } else {
+      var ts = parseInt(rest, 10);
+      if (kind === 'irr') state.irritations = state.irritations.filter(function (r) { return r.ts !== ts; });
+      else if (kind === 'forgot') state.forgot = state.forgot.filter(function (r) { return r.ts !== ts; });
+      else state.goods = state.goods.filter(function (r) { return r.ts !== ts; });
+    }
+    save();
+  }
+  pendingDelete = null;
+  document.getElementById('confirm-modal').classList.remove('active');
+  render();
+};
+
+setInterval(tick, 500);
+render();
+</script>
+</body>
+</html>
